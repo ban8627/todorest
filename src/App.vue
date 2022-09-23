@@ -1,101 +1,72 @@
 <template>
-  <!-- <div>
-    {{ name }}
-    <br />
-    <button class="btn btn-primary" @click="updateName">변경</button>
-    <br />
-    {{ age.age }}
-    <br />
-    <button class="btn btn-danger" @click="updateAge">나이</button>
-  </div>
-  <hr />
-  <input :type="text" :value="name" /> -->
-  <!-- <div>
-    <input type="text" v-model="name" />
-    <button class="btn btn-primary" @click="onSubmit">업데이트</button>
-  </div> -->
-  <div class="conatiner">
+  <div class="container">
     <h2>Todo List</h2>
-    <form action="" @submit.prevent="onSubmit">
-      <div class="d-flex">
-        <div class="flex-grow-1 mr-2">
-          <input
-            type="text"
-            class="form-control"
-            v-model="todo"
-            placeholder="Type New Todo"
-          />
-        </div>
-        <div>
-          <button class="btn btn-primary" type="submit">Add</button>
-        </div>
-      </div>
-      <div v-show="hasError">내용을 기재해 주쇼.</div>
-    </form>
-    <div v-if="!todos.length">추가된 할 일 없쇼.</div>
-    <div v-for="(item, index) in todos" :key="index" class="card mt-2">
-      <div class="card-body p-2 d-flex">
-        <div class="form-check flex-grow-1 align-items-center">
-          <input
-            type="checkbox"
-            class="form-check-input"
-            v-model="item.complete"
-          />
-          <label class="form-check-label" :class="{ todostyle: item.complete }"
-            >{{ item.subject }}
-          </label>
-        </div>
-        <div>
-          <button class="btn btn-danger btn-small" @click="deleteTodo(index)">
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- 할 일 검색 폼 -->
+    <input
+      type="text"
+      class="form-control"
+      v-model="searchText"
+      placeholder="Search"
+    />
+    <!-- 할 일 입력 -->
+    <TodoForm @add-todo="addTodo" />
+    <!-- 목록없음 안내 -->
+    <div v-if="!todos.length">추가된 Todo가 없습니다.</div>
+    <!-- 할 일 목록 -->
+    <TodoList
+      :todos="filterTodos"
+      @delete-todo="deleteTodo"
+      @toggle-todo="toggleTodo"
+    />
   </div>
 </template>
-
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import TodoForm from "./components/TodoForm.vue";
+import TodoList from "./components/TodoList.vue";
 export default {
+  components: {
+    TodoForm,
+    TodoList,
+  },
   setup() {
-    // const name = ref("홍길동");    // name.value = "고길동";    // const updateName = () => {    //   name.value = "박길동";    // };
-    // const age = reactive({    //   age: 30,    // });
-    // const updateAge = () => {    //   age.age = 33;    // };
-    // const name = ref("홍길동");
-    // const onSubmit = () => { // };
-    const hasError = ref(false);
-    const todo = ref("");
-    const todos = ref([]);
-    const onSubmit = () => {
-      if (todo.value == "") {
-        hasError.value = true;
-      } else {
-        hasError.value = false;
-        todos.value.push({
-          id: Date.now(),
-          subject: todo.value,
-          complete: false,
-        });
-      }
-      todo.value = "";
+    const todos = ref([
+      { id: 1, subject: "할일목록 1", complete: false },
+      { id: 2, subject: "할일목록 2", complete: false },
+      { id: 3, subject: "할일목록 3", complete: false },
+    ]);
+    const addTodo = (todo) => {
+      todos.value.push(todo);
     };
     const deleteTodo = (index) => {
       todos.value.splice(index, 1);
     };
+    const toggleTodo = (index) => {
+      todos.value[index].complete = !todos.value[index].complete;
+    };
+    const searchText = ref("");
+    const filterTodos = computed(() => {
+      if (searchText.value) {
+        return todos.value.filter((todo) => {
+          return todo.subject.includes(searchText.value);
+        });
+      }
+      return todos.value;
+    });
     return {
-      // name,      // age,      // updateName,      // updateAge,      // onSubmit,
-      todo,
       todos,
-      onSubmit,
-      hasError,
+      addTodo,
       deleteTodo,
+      toggleTodo,
+      searchText,
+      filterTodos,
     };
   },
 };
 </script>
-
 <style>
+#app {
+}
 .todostyle {
   text-decoration: line-through;
   color: gray;
