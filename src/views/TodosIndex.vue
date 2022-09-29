@@ -1,6 +1,11 @@
 <template>
   <div class="container">
-    <h1>To Do List</h1>
+    <div class="d-flex justify-content-between mb-3 mt-3">
+      <h2>To Do List</h2>
+      <button class="btn btn-primary btn-sm" @click="moveToCreate">
+        Create Todo
+      </button>
+    </div>
     <!-- 할 일 검색 폼 -->
     <input
       type="text"
@@ -8,8 +13,7 @@
       v-model="searchText"
       placeholder="Search"
     />
-    <!-- 할 일 입력 -->
-    <TodoForm @add-todo="addTodo" style="margin-top: 10px" />
+
     <!-- 서버에러 출력 -->
     <ErrBox :errtext="error" />
     <!-- 목록없음 안내 -->
@@ -21,22 +25,25 @@
       @toggle-todo="toggleTodo"
     />
     <PaginationView :page="page" :totalpage="totalPage" @get-todo="getTodo" />
+    <ToastBox :message="toastMessage" :color="toastType" v-if="showToast" />
   </div>
 </template>
 
 <script>
 import { ref, computed, watchEffect, watch } from "vue";
 import axios from "axios";
-import TodoForm from "@/components/TodoForm.vue";
 import TodoList from "@/components/TodoList.vue";
 import PaginationView from "@/components/PaginationView.vue";
 import ErrBox from "@/components/ErrorBox.vue";
+import ToastBox from "@/components/ToastBox.vue";
+import { useToast } from "@/composables/toast";
+import { useRouter } from "vue-router";
 export default {
   components: {
-    TodoForm,
     TodoList,
     PaginationView,
     ErrBox,
+    ToastBox,
   },
   setup() {
     // Pagination 구현
@@ -62,9 +69,11 @@ export default {
         });
         todos.value.push(todo);
         getTodo(1);
+        triggerToast("목록이 추가 되었습니다.");
       } catch (err) {
         console.log(err);
         error.value = "목록 추가 실패";
+        triggerToast("목록 추가 실패되었습니다.", "danger");
       }
     };
     const deleteTodo = async (index) => {
@@ -75,9 +84,11 @@ export default {
         await axios.delete("http://localhost:3000/todos/" + id);
         todos.value.splice(index, 1);
         getTodo(page.value);
+        triggerToast("삭제되었습니다.");
       } catch (err) {
         console.log(err);
         error.value = "삭제 요청이 거부되었습니다.";
+        triggerToast("삭제 요청이 거부되었습니다.", "danger");
       }
     };
     const toggleTodo = async (index) => {
@@ -90,9 +101,11 @@ export default {
           complete,
         });
         todos.value[index].complete = complete;
+        triggerToast("업데이트에 성공하였습니다.");
       } catch (err) {
         console.log(err);
         error.value = "업데이트에 실패하였습니다.";
+        triggerToast("업데이트에 실패하였습니다.", "danger");
       }
     };
     const searchText = ref("");
@@ -128,12 +141,25 @@ export default {
         // 총 목록 수
         totalCount.value = response.headers["x-total-count"];
         page.value = nowPage;
+        triggerToast("서버 목록 호출에 성공했습니다.");
       } catch (err) {
         console.log(err);
         error.value = "서버 목록 호출에 실패했습니다. 잠시 뒤 이용해 주세요.";
+        triggerToast(
+          "서버 목록 호출에 실패했습니다. 잠시 뒤 이용해 주세요.",
+          "danger"
+        );
       }
     };
     getTodo();
+    // 안내창 관련
+    const { showToast, toastMessage, toastType, triggerToast } = useToast();
+    const router = useRouter();
+    const moveToCreate = () => {
+      router.push({
+        name: "Create",
+      });
+    };
     return {
       todos,
       addTodo,
@@ -145,6 +171,10 @@ export default {
       getTodo,
       totalPage,
       page,
+      toastMessage,
+      showToast,
+      toastType,
+      moveToCreate,
     };
   },
 };
