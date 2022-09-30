@@ -65,15 +65,13 @@ export default {
     const error = ref("");
     const deleteTodo = async (index) => {
       try {
-        // 현재 index 는 인덱스 번호 0 ~ n 가 전송
-        // 실제 저장되어 있는 id 를 파악
-        const id = todos.value[index].id;
+        const id = index;
         await axios.delete("http://localhost:3000/todos/" + id);
-        todos.value.splice(index, 1);
+        // 목록이 삭제 되면 현재페이지에서 체류
         getTodo(page.value);
-        emit("delete-todo-toast", {});
+        emit("delete-todo-toast");
       } catch (err) {
-        // error.value = "삭제 요청이 거부되었습니다.";
+        error.value = "삭제 요청이 거부되었습니다.";
         emit("delete-todo-fail-toast", {});
       }
     };

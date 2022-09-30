@@ -68,7 +68,9 @@
     @delete-todo-toast="deleteTodoToast"
     @delete-todo-fail-toast="deleteTodoFailToast"
   />
-  <ToastBox v-if="showToast" :message="toastMessage" :color="toastType" />
+  <Transition name="fade"
+    ><ToastBox v-if="showToast" :message="toastMessage" :color="toastType" />
+  </Transition>
 </template>
 <script>
 import ToastBox from "@/components/ToastBox.vue";
@@ -140,7 +142,20 @@ export default {
   },
 };
 </script>
-<style>
-#app {
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -30px);
+}
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 </style>
