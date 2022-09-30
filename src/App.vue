@@ -57,12 +57,86 @@
       </div>
     </div>
   </nav>
-  <RouterView></RouterView>
+  <RouterView
+    @update-todo-toast="updateTodoToast"
+    @new-todo-toast="newTodoToast"
+    @update-load-fail-toast="updateLoadFailToast"
+    @update-todo-fail-toast="updateTodoFailToast"
+    @err-subject-toast="errSubjectToast"
+    @new-todo-fail-toast="newTodoFailToast"
+    @list-load-fail-toast="listLoadFailToast"
+    @delete-todo-toast="deleteTodoToast"
+    @delete-todo-fail-toast="deleteTodoFailToast"
+  />
+  <ToastBox v-if="showToast" :message="toastMessage" :color="toastType" />
 </template>
 <script>
+import ToastBox from "@/components/ToastBox.vue";
+import { useToast } from "@/composables/toast";
 export default {
+  components: {
+    ToastBox,
+  },
   setup() {
-    return {};
+    const updateTodoToast = () => {
+      triggerToast("내용 업데이트 성공!");
+    };
+    const newTodoToast = () => {
+      triggerToast("새글 작성 완료!");
+    };
+    const updateLoadFailToast = () => {
+      triggerToast(
+        "내용을 가지고 오는데 실패하였습니다. 잠시 뒤 다시 시도해 주세요.",
+        "danger"
+      );
+    };
+    const updateTodoFailToast = () => {
+      triggerToast(
+        "수정에실패하였습니다. 잠시 뒤 다시 시도해 주세요.",
+        "danger"
+      );
+    };
+    const newTodoFailToast = () => {
+      triggerToast(
+        "등록에 실패하였습니다. 잠시 뒤 다시 시도해 주세요.",
+        "danger"
+      );
+    };
+    const errSubjectToast = () => {
+      triggerToast("제목을 입력해주세요!", "danger");
+    };
+    const listLoadFailToast = () => {
+      triggerToast(
+        "목록 호출에 실패하였습니다. 잠시 뒤 다시 시도해 주세요.",
+        "danger"
+      );
+    };
+    const deleteTodoToast = () => {
+      triggerToast("삭제에 성공하였습니다!");
+    };
+    const deleteTodoFailToast = () => {
+      triggerToast(
+        "삭제에 실패하였습니다. 잠시 뒤 다시 시도해 주세요.",
+        "danger"
+      );
+    };
+
+    const { showToast, toastMessage, toastType, triggerToast } = useToast();
+    return {
+      updateTodoToast,
+      newTodoToast,
+      updateLoadFailToast,
+      updateTodoFailToast,
+      errSubjectToast,
+      newTodoFailToast,
+      listLoadFailToast,
+      deleteTodoToast,
+      deleteTodoFailToast,
+      toastMessage,
+      showToast,
+      toastType,
+      triggerToast,
+    };
   },
 };
 </script>

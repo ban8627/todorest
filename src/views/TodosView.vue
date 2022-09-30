@@ -1,7 +1,13 @@
 <template>
   <div class="container">
     <h2>Todo View</h2>
-    <TodoForm :editing="true" />
+    <TodoForm
+      :editing="true"
+      @update-todo="updateTodo"
+      @update-load-fail="updateLoadFail"
+      @update-todo-fail="updateTodoFail"
+      @err-subject="errSubject"
+    />
   </div>
 </template>
 
@@ -9,7 +15,13 @@
 import TodoForm from "@/components/TodoForm.vue";
 export default {
   components: { TodoForm },
-  setup() {
+  emits: [
+    "update-todo-toast",
+    "update-load-fail-toast",
+    "update-todo-fail-toast",
+    "err-subject-toast",
+  ],
+  setup(props, { emit }) {
     // 생명 주기 코드(LifeCycle Hooks)
     // 화면에 보여지기전(등록) 단계
     // : 화면을 보여주기 전에 데이터를 준비하는 Hook
@@ -32,7 +44,20 @@ export default {
     // onUnmounted(() => {
     //   clearTimeout(toastTimer.value);
     // });
-    return {};
+    const updateTodo = () => {
+      // console.log("내용 업데이트");
+      emit("update-todo-toast", {});
+    };
+    const updateLoadFail = () => {
+      emit("update-load-fail-toast", {});
+    };
+    const updateTodoFail = () => {
+      emit("update-todo-fail-toast", {});
+    };
+    const errSubject = () => {
+      emit("err-subject-toast", {});
+    };
+    return { updateTodo, updateLoadFail, updateTodoFail, errSubject };
   },
 };
 </script>
