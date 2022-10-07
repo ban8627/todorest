@@ -1,13 +1,9 @@
 <template>
-  <div class="conatiner">Homepage</div>
+  <div class="container">Homepage</div>
 </template>
 
 <script>
-export default {
-  setup() {
-    return {};
-  },
-};
+export default {};
 </script>
 
 <style></style>

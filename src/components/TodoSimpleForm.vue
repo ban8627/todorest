@@ -3,8 +3,8 @@
     <div class="d-flex">
       <div class="flex-grow-1 mr-2">
         <input
-          type="text"
           class="form-control"
+          type="text"
           v-model="todo"
           placeholder="Type New Todo"
         />
@@ -13,25 +13,26 @@
         <button class="btn btn-primary" type="submit">Add</button>
       </div>
     </div>
-    <div v-show="hasError">내용을 기재해 주쇼.</div>
+    <div v-show="hasError" style="color: red">내용을 기재해 주세요.</div>
   </form>
 </template>
 
 <script>
 import { ref } from "vue";
 export default {
-  setup(props, context) {
+  emits: ["add-todo"],
+  setup(props, { emit }) {
     // 빈 내용 입력 방지 hasError
     const hasError = ref(false);
-    // 새로운 할 일 데이터 todo
+    // 새로운 할일 데이터 todo
     const todo = ref("");
-    // 등록
+    // Todo 등록
     const onSubmit = () => {
-      if (todo.value == "") {
+      if (todo.value === "") {
         hasError.value = true;
       } else {
         hasError.value = false;
-        context.emit("add-todo", {
+        emit("add-todo", {
           id: Date.now(),
           subject: todo.value,
           complete: false,
@@ -47,5 +48,3 @@ export default {
   },
 };
 </script>
-
-<style></style>

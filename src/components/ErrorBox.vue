@@ -1,5 +1,7 @@
 <template>
-  <div class="red">{{ errtext }}</div>
+  <div class="red">
+    {{ errtext }}
+  </div>
 </template>
 
 <script>

@@ -19,17 +19,7 @@
           <slot name="body"></slot>
         </div>
         <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-dismiss="modal"
-            @click="onClose"
-          >
-            Close
-          </button>
-          <button type="button" class="btn btn-danger" @click="onDelete">
-            Delete
-          </button>
+          <slot name="footer"></slot>
         </div>
       </div>
     </div>
@@ -38,17 +28,14 @@
 
 <script>
 export default {
-  emits: ["close-modal", "delete-list"],
+  emits: ["close"],
   setup(props, { emit }) {
     const onClose = () => {
-      emit("close-modal", {});
+      emit("close", {});
     };
-    const onDelete = () => {
-      emit("delete-list", {});
-    };
+
     return {
       onClose,
-      onDelete,
     };
   },
 };
@@ -61,7 +48,7 @@ export default {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.7);
   z-index: 99;
 }
 </style>
